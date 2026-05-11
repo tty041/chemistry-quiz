@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>河南中考化学 · 在线练习</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+    --primary: #2d7a4e;
+    --primary-light: #3c9d64;
+    --primary-dark: #1e5a36;
+    --accent: #f5a623;
+    --bg: #f0f4f0;
+    --card: #ffffff;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --danger: #e74c3c;
+    --success: #27ae60;
+    --border: #dce3dc;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --radius: 16px;
+}
+body {
+    font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+.hidden { display: none !important; }
+
+/* ========== Header ========== */
+.app-header {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: white;
+    padding: 16px 20px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+.app-header h1 { font-size: 20px; font-weight: 700; }
+.app-header .sub { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+
+/* ========== Container ========== */
+.container { max-width: 800px; margin: 0 auto; padding: 16px; }
+
+/* ========== Home Page ========== */
+.home-grid { display: grid; gap: 12px; margin-top: 16px; }
+.home-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    border: 2px solid transparent;
+}
+.home-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+.home-card:active { transform: scale(0.98); }
+.home-card .icon { font-size: 28px; margin-bottom: 8px; }
+.home-card h3 { font-size: 17px; margin-bottom: 4px; }
+.home-card p { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+.home-card .tag {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    background: var(--bg);
+    color: var(--text-light);
+}
+.card-exam { border-color: var(--danger); }
+.card-chapter { border-color: var(--primary); }
+.card-random { border-color: var(--accent); }
+
+/* ========== Chapter List ========== */
+.chapter-list { display: grid; gap: 10px; margin-top: 12px; }
+.chapter-item {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.1s;
+}
+.chapter-item:active { transform: scale(0.98); }
+.chapter-item .name { font-size: 15px; font-weight: 500; }
+.chapter-item .count { font-size: 12px; color: var(--text-light); background: var(--bg); padding: 2px 10px; border-radius: 10px; }
+.chapter-item .done { color: var(--success); }
+
+/* ========== Quiz Page ========== */
+.quiz-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; padding: 12px 0;
+}
+.quiz-header .back {
+    background: none; border: none; font-size: 24px; cursor: pointer; padding: 4px 8px;
+    color: var(--text); border-radius: 8px;
+}
+.quiz-header .back:hover { background: var(--bg); }
+.quiz-progress {
+    font-size: 14px; font-weight: 600; color: var(--primary);
+}
+.quiz-timer {
+    font-size: 14px; font-weight: 600; color: var(--accent);
+}
+.quiz-timer.warning { color: var(--danger); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+/* ========== Question Card ========== */
+.question-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+}
+.q-number {
+    font-size: 12px; color: var(--primary); font-weight: 600;
+    background: #e8f5e9; padding: 2px 10px; border-radius: 10px; display: inline-block; margin-bottom: 12px;
+}
+.q-type {
+    font-size: 12px; color: var(--accent); font-weight: 600;
+    background: #fff8e1; padding: 2px 10px; border-radius: 10px; display: inline-block; margin-left: 6px;
+}
+.q-chapter {
+    font-size: 12px; color: #666;
+    background: #f5f5f5; padding: 2px 10px; border-radius: 10px; display: inline-block; margin-left: 6px;
+}
+.q-text {
+    font-size: 16px; line-height: 1.8; margin: 12px 0 16px;
+}
+.q-text .highlight { color: var(--primary); font-weight: 600; }
+
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option {
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 15px;
+    line-height: 1.6;
+    background: #fafcfa;
+}
+.option:hover { border-color: var(--primary-light); background: #f0faf3; }
+.option.selected { border-color: var(--primary); background: #e8f5e9; }
+.option.correct { border-color: var(--success); background: #e8f8f0; }
+.option.wrong { border-color: var(--danger); background: #fdecea; }
+.option.disabled { pointer-events: none; opacity: 0.7; }
+.option .label {
+    display: inline-block; font-weight: 700; margin-right: 8px; color: var(--primary);
+}
+
+/* ========== Fill Blank ========== */
+.fill-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: inherit;
+}
+.fill-input:focus { border-color: var(--primary); }
+.fill-input.correct { border-color: var(--success); background: #e8f8f0; }
+.fill-input.wrong { border-color: var(--danger); background: #fdecea; }
+
+/* ========== Explanation ========== */
+.explanation {
+    background: #f8f9fa;
+    border-left: 4px solid var(--primary);
+    padding: 14px 16px;
+    border-radius: 0 12px 12px 0;
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #444;
+}
+.explanation strong { color: var(--primary-dark); }
+
+/* ========== Buttons ========== */
+.btn-row {
+    display: flex; gap: 10px; margin-top: 16px;
+}
+.btn {
+    flex: 1;
+    padding: 14px;
+    border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-light); }
+.btn-primary:disabled { background: #bdc3c7; cursor: not-allowed; }
+.btn-outline {
+    background: white; color: var(--primary); border: 2px solid var(--primary);
+}
+.btn-outline:hover { background: #f0faf3; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-danger:hover { background: #c0392b; }
+.btn-accent { background: var(--accent); color: white; }
+.btn-accent:hover { background: #e6951f; }
+
+/* ========== Result ========== */
+.result-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    margin-bottom: 16px;
+}
+.result-score {
+    font-size: 56px; font-weight: 800; color: var(--primary);
+    line-height: 1;
+}
+.result-score .total { font-size: 24px; color: var(--text-light); }
+.result-label { font-size: 14px; color: var(--text-light); margin: 8px 0 16px; }
+.result-stats {
+    display: flex; justify-content: center; gap: 24px; margin: 16px 0;
+}
+.stat-item { text-align: center; }
+.stat-item .num { font-size: 22px; font-weight: 700; }
+.stat-item .label { font-size: 12px; color: var(--text-light); }
+.stat-correct .num { color: var(--success); }
+.stat-wrong .num { color: var(--danger); }
+.stat-skip .num { color: var(--text-light); }
+
+.result-detail-list { margin-top: 16px; }
+.result-detail-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+}
+.result-detail-item:hover { background: #f8f9fa; }
+.result-detail-item .r { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.result-detail-item .r-c { background: #e8f8f0; color: var(--success); }
+.result-detail-item .r-w { background: #fdecea; color: var(--danger); }
+.result-detail-item .r-s { background: #f5f5f5; color: #999; }
+.result-detail-item .q { font-size: 13px; color: var(--text); }
+
+/* ========== Review ========== */
+.review-section { margin-top: 12px; }
+
+/* ========== Badge ========== */
+.badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+}
+.badge-primary { background: #e8f5e9; color: var(--primary); }
+.badge-accent { background: #fff8e1; color: var(--accent); }
+
+/* ========== Progress Bar ========== */
+.progress-bar {
+    height: 6px; background: var(--border); border-radius: 3px; margin: 8px 0 16px; overflow: hidden;
+}
+.progress-bar .fill {
+    height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    border-radius: 3px; transition: width 0.3s;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 480px) {
+    .container { padding: 12px; }
+    .question-card { padding: 16px; border-radius: 12px; }
+    .q-text { font-size: 15px; }
+    .option { padding: 12px; font-size: 14px; }
+    .result-score { font-size: 42px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+    <h1>🧪 河南中考化学 · 在线练习</h1>
+    <div class="sub">涵盖河南省中考化学历年真题 · 全部知识模块</div>
+</div>
+
+<div class="container" id="app">
+
+    <!-- ======== Home ======== -->
+    <div id="pageHome">
+        <div class="home-grid">
+            <div class="home-card card-chapter" onclick="showChapterList()">
+                <div class="icon">📖</div>
+                <h3>按章节练习</h3>
+                <p>按知识模块分类练习，逐一攻破每个考点</p>
+                <span class="tag">共 6 大模块 · 60 道题</span>
+            </div>
+            <div class="home-card card-exam" onclick="startExam()">
+                <div class="icon">📝</div>
+                <h3>模拟考试</h3>
+                <p>25 道题限时 40 分钟，模拟真实中考场景</p>
+                <span class="tag">随机抽题 · 限时挑战</span>
+            </div>
+            <div class="home-card card-random" onclick="startRandom(10)">
+                <div class="icon">🎲</div>
+                <h3>随机 10 题</h3>
+                <p>从全部题库随机抽取，快速检验掌握程度</p>
+                <span class="tag">不限时 · 轻松练习</span>
+            </div>
+            <div class="home-card" style="border-color:#9b59b6;" onclick="showReview()">
+                <div class="icon">📋</div>
+                <h3>错题回顾</h3>
+                <p>复习做错的题目，巩固薄弱知识点</p>
+                <span class="tag" id="wrongTag">暂无错题</span>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:24px;font-size:12px;color:#aaa;">
+            题目来源：河南省中考化学历年真题及各地市模拟题汇编
+        </div>
+    </div>
+
+    <!-- ======== Chapter List ======== -->
+    <div id="pageChapter" class="hidden">
+        <div class="quiz-header">
+            <button class="back" onclick="showHome()">&larr;</button>
+            <span style="font-weight:600;">选择章节</span>
+            <span></span>
+        </div>
+        <div class="chapter-list" id="chapterList"></div>
+    </div>
+
+    <!-- ======== Quiz ======== -->
+    <div id="pageQuiz" class="hidden">
+        <div class="quiz-header">
+            <button class="back" onclick="confirmExit()">&larr;</button>
+            <span class="quiz-progress" id="quizProgress"></span>
+            <span class="quiz-timer hidden" id="quizTimer">⏱ 40:00</span>
+        </div>
+        <div class="progress-bar" id="progressBarWrapper">
+            <div class="fill" id="progressFill" style="width:0%"></div>
+        </div>
+        <div id="questionArea"></div>
+    </div>
+
+    <!-- ======== Result ======== -->
+    <div id="pageResult" class="hidden">
+        <div class="result-card" id="resultCard"></div>
+        <div class="btn-row">
+            <button class="btn btn-primary" onclick="showReviewResult()">查看详细解析</button>
+            <button class="btn btn-outline" onclick="showHome()">返回首页</button>
+        </div>
+        <div id="resultReview" class="hidden review-section"></div>
+    </div>
+
+</div>
+
+<script>
+// ====================================================================
+//  问 题 库  —— 河南中考化学真题风格，涵盖全部知识模块
+// ====================================================================
+const QUESTION_BANK = [
+    // ---------- 模块 1：物质的化学变化 ----------
+    {
+        id: 'c1_01', type: 'choice', chapter: '物质的化学变化', chapterIdx: 0,
+        question: '下列变化中，属于物理变化的是',
+        options: ['A. 铁生锈', 'B. 食物腐烂', 'C. 酒精挥发', 'D. 木炭燃烧'],
+        answer: 2,
+        explanation: '酒精挥发是状态改变，没有新物质生成，属于物理变化。铁生锈、食物腐烂、木炭燃烧都有新物质生成，属于化学变化。'
+    },
+    {
+        id: 'c1_02', type: 'choice', chapter: '物质的化学变化', chapterIdx: 0,
+        question: '下列变化中，前者是物理变化，后者是化学变化的是',
+        options: ['A. 干冰升华，钢铁生锈', 'B. 牛奶变酸，蜡烛燃烧', 'C. 酒精挥发，石油分馏', 'D. 冰雪融化，矿石粉碎'],
+        answer: 0,
+        explanation: '干冰升华是物理变化，钢铁生锈是化学变化。B中牛奶变酸是化学变化；C中石油分馏是物理变化；D中矿石粉碎是物理变化。'
+    },
+    {
+        id: 'c1_03', type: 'choice', chapter: '物质的化学变化', chapterIdx: 0,
+        question: '在化学反应前后，一定不变的是<br>①原子种类 ②分子种类 ③原子数目 ④分子数目 ⑤元素种类 ⑥物质种类',
+        options: ['A. ①②③', 'B. ①③⑤', 'C. ②④⑥', 'D. ③④⑤'],
+        answer: 1,
+        explanation: '质量守恒定律：化学反应前后，原子种类、原子数目、元素种类一定不变。分子种类和物质种类一定改变，分子数目可能改变。'
+    },
+    {
+        id: 'c1_04', type: 'choice', chapter: '物质的化学变化', chapterIdx: 0,
+        question: '下列化学方程式书写正确的是',
+        options: [
+            'A. 4Fe + 3O₂ ⟶ 2Fe₂O₃',
+            'B. H₂ + O₂ ⟶ H₂O',
+            'C. 2Mg + O₂ ⟶ 2MgO（点燃）',
+            'D. 2KClO₃ ⟶ 2KCl + 3O₂↑'
+        ],
+        answer: 2,
+        explanation: 'A错误：铁在氧气中燃烧生成Fe₃O₄而不是Fe₂O₃；B错误：没配平；D错误：缺少催化剂MnO₂和加热条件。'
+    },
+    {
+        id: 'c1_05', type: 'choice', chapter: '物质的化学变化', chapterIdx: 0,
+        question: '在一个密闭容器中，有甲、乙、丙、丁四种物质在一定条件下充分反应，测得反应前后各物质的质量如下：甲反应前10g反应后5g，乙反应前5g反应后20g，丙反应前2g反应后2g，丁反应前10g反应后？。下列说法不正确的是',
+        options: [
+            'A. 丁反应后的质量为 0g',
+            'B. 该反应中甲和乙的质量变化比为 1:3',
+            'C. 该反应属于分解反应',
+            'D. 乙一定是化合物'
+        ],
+        answer: 2,
+        explanation: '由质量守恒：反应前总质量=10+5+2+10=27g。反应后丙质量不变（2g），则丁质量=27-5-20-2=0g，A正确。甲减少5g为反应物，乙增加15g为生成物，甲:乙=5:15=1:3，B正确。该反应是甲+丁→乙（两种物质生成一种物质），属于化合反应，C错误。乙由甲和丁反应生成，所以乙一定是化合物，D正确。'
+    },
+    {
+        id: 'c1_06', type: 'choice', chapter: '物质的化学变化', chapterIdx: 0,
+        question: '下列现象能用质量守恒定律解释的是',
+        options: [
+            'A. 10g 水受热变成 10g 水蒸气',
+            'B. 蜡烛燃烧后质量变小',
+            'C. 100mL 水和 100mL 酒精混合总体积小于 200mL',
+            'D. 湿衣服晾干后质量减小'
+        ],
+        answer: 1,
+        explanation: '质量守恒定律适用于化学变化。蜡烛燃烧是化学变化，生成CO₂和水蒸气逸散，所以质量减小。A、D是物理变化，C是物理变化中分子间间隔变化。'
+    },
+    {
+        id: 'c1_07', type: 'choice', chapter: '物质的化学变化', chapterIdx: 0,
+        question: '碳在氧气中燃烧，下列说法符合质量守恒定律的是',
+        options: [
+            'A. 3g C 和 8g O₂ 反应生成 11g CO₂',
+            'B. 6g C 和 8g O₂ 反应生成 14g CO₂',
+            'C. 3g C 和 10g O₂ 反应生成 13g CO₂',
+            'D. 6g C 和 16g O₂ 反应生成 22g CO₂'
+        ],
+        answer: 0,
+        explanation: 'C + O₂ ⟶ CO₂，质量比 12:32=3:8。3g C恰好与8g O₂完全反应生成11g CO₂。B中碳过量，C和D中氧气过量，都只能按比例生成。A正确。'
+    },
+
+    // ---------- 模块 2：身边的化学物质 ----------
+    {
+        id: 'c2_01', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '空气中含量最多的气体是',
+        options: ['A. 氧气', 'B. 氮气', 'C. 二氧化碳', 'D. 稀有气体'],
+        answer: 1,
+        explanation: '空气中氮气约占78%，氧气约占21%，二氧化碳约占0.03%，稀有气体约占0.94%。'
+    },
+    {
+        id: 'c2_02', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '下列物质在空气中燃烧，产生大量白烟的是',
+        options: ['A. 木炭', 'B. 硫', 'C. 红磷', 'D. 铁丝'],
+        answer: 2,
+        explanation: '红磷在空气中燃烧生成五氧化二磷固体颗粒，产生大量白烟。木炭燃烧生成CO₂无色气体；硫燃烧生成SO₂有刺激性气味；铁丝在空气中不能燃烧。'
+    },
+    {
+        id: 'c2_03', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '下列有关水的说法正确的是',
+        options: [
+            'A. 纯净水是纯净物',
+            'B. 水是由氢气和氧气组成的',
+            'C. 活性炭在净水过程中发生了化学变化',
+            'D. 用过滤的方法可将海水转化为淡水'
+        ],
+        answer: 0,
+        explanation: 'A正确：纯净水是H₂O一种物质。B错误：水是由氢元素和氧元素组成的。C错误：活性炭吸附是物理变化。D错误：过滤只能除去不溶性杂质，不能将海水淡化。'
+    },
+    {
+        id: 'c2_04', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '下列关于氧气性质的说法正确的是',
+        options: [
+            'A. 氧气是一种常见的燃料',
+            'B. 氧气不易溶于水',
+            'C. 液态氧是无色的',
+            'D. 氧气具有可燃性'
+        ],
+        answer: 1,
+        explanation: 'A错误：氧气支持燃烧但本身不能燃烧，不是燃料。B正确：氧气不易溶于水（1L水约溶解30mL氧气）。C错误：液态氧是淡蓝色的。D错误：氧气具有助燃性，不具有可燃性。'
+    },
+    {
+        id: 'c2_05', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '实验室用高锰酸钾制取氧气，下列操作不正确的是',
+        options: [
+            'A. 试管口略向下倾斜',
+            'B. 试管口放一团棉花',
+            'C. 排水法收集气体时，有气泡放出立即收集',
+            'D. 实验结束时，先将导管撤出水面，再熄灭酒精灯'
+        ],
+        answer: 2,
+        explanation: 'C错误：排水法收集时应等气泡连续均匀放出后再收集，因为刚开始排出的气体是试管中的空气。A、B、D都是正确操作。'
+    },
+    {
+        id: 'c2_06', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '下列关于CO₂的说法不正确的是',
+        options: [
+            'A. CO₂能使紫色石蕊溶液变红',
+            'B. CO₂能使澄清石灰水变浑浊',
+            'C. CO₂不燃烧也不支持燃烧',
+            'D. CO₂有毒，会使人窒息死亡'
+        ],
+        answer: 3,
+        explanation: 'D不正确：CO₂本身没有毒性，但空气中CO₂浓度过高会导致氧气不足而使人窒息。A正确：CO₂与水反应生成碳酸，使石蕊变红。'
+    },
+    {
+        id: 'c2_07', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '下列金属中，活动性最强的是',
+        options: ['A. 铁', 'B. 铜', 'C. 铝', 'D. 银'],
+        answer: 2,
+        explanation: '金属活动性顺序：K Ca Na Mg Al Zn Fe Sn Pb (H) Cu Hg Ag Pt Au。铝在铁之前，所以铝的活动性最强。'
+    },
+    {
+        id: 'c2_08', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '下列物质溶于水时，溶液温度明显降低的是',
+        options: ['A. 浓硫酸', 'B. 氢氧化钠', 'C. 氯化钠', 'D. 硝酸铵'],
+        answer: 3,
+        explanation: '硝酸铵(NH₄NO₃)溶于水吸热，溶液温度降低。浓硫酸和氢氧化钠溶于水放热，氯化钠溶于水温度变化不明显。'
+    },
+    {
+        id: 'c2_09', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '将铁钉放入稀硫酸中，观察到的现象是',
+        options: [
+            'A. 铁钉表面产生气泡，溶液变为黄色',
+            'B. 铁钉表面产生气泡，溶液变为浅绿色',
+            'C. 无明显现象',
+            'D. 铁钉表面产生气泡，溶液不变色'
+        ],
+        answer: 1,
+        explanation: 'Fe + H₂SO₄ = FeSO₄ + H₂↑，FeSO₄溶液为浅绿色，同时产生氢气气泡。'
+    },
+    {
+        id: 'c2_10', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '鉴别碳酸钠溶液和氯化钠溶液，可选用的试剂是',
+        options: ['A. 稀盐酸', 'B. 水', 'C. 酚酞溶液', 'D. A和C均可'],
+        answer: 3,
+        explanation: 'A和C均可。加入稀盐酸，碳酸钠产生气泡，氯化钠无明显现象；滴加酚酞，碳酸钠溶液显碱性变红，氯化钠溶液中性不变色。'
+    },
+    {
+        id: 'c2_11', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '下列物质中，属于氧化物的是',
+        options: ['A. KMnO₄', 'B. O₂', 'C. H₂O', 'D. Na₂CO₃'],
+        answer: 2,
+        explanation: '氧化物是由两种元素组成，其中一种是氧元素的化合物。H₂O由氢和氧两种元素组成，属于氧化物。A和D含三种元素，B是单质。'
+    },
+    {
+        id: 'c2_12', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: 'pH=2的溶液显',
+        options: ['A. 中性', 'B. 碱性', 'C. 酸性', 'D. 不确定'],
+        answer: 2,
+        explanation: 'pH < 7 显酸性，pH = 7 显中性，pH > 7 显碱性。pH=2显酸性，且酸性较强。'
+    },
+
+    // ---------- 模块 3：化学实验与探究 ----------
+    {
+        id: 'c3_01', type: 'choice', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '下列实验操作中，正确的是',
+        options: [
+            'A. 用嘴吹灭酒精灯',
+            'B. 用镊子取用块状药品',
+            'C. 将鼻孔凑到集气瓶口闻气体气味',
+            'D. 将实验剩余药品放回原瓶'
+        ],
+        answer: 1,
+        explanation: 'A错误：应用灯帽盖灭酒精灯。B正确：块状药品用镊子取用。C错误：应用手扇法闻气体。D错误：剩余药品应放入指定容器，不能放回原瓶。'
+    },
+    {
+        id: 'c3_02', type: 'choice', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '量取 8.5mL 液体，应选用的量筒规格是',
+        options: ['A. 10mL', 'B. 20mL', 'C. 50mL', 'D. 100mL'],
+        answer: 0,
+        explanation: '选取量筒时，应选择量程略大于所要量取液体体积的量筒，以减小误差。8.5mL应选用10mL量筒。'
+    },
+    {
+        id: 'c3_03', type: 'choice', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '下列各组气体中，均能用向上排空气法收集的是',
+        options: [
+            'A. O₂ 和 CO₂',
+            'B. H₂ 和 O₂',
+            'C. CO₂ 和 H₂',
+            'D. H₂ 和 CH₄'
+        ],
+        answer: 0,
+        explanation: '向上排空气法适用于密度比空气大的气体。O₂（密度1.429 g/L）和CO₂（密度1.977 g/L）密度均大于空气。H₂和CH₄密度小于空气，应用向下排空气法。'
+    },
+    {
+        id: 'c3_04', type: 'choice', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '除去 CO₂ 中混有的少量 CO，最合适的方法是',
+        options: [
+            'A. 点燃',
+            'B. 通过灼热的 CuO',
+            'C. 通入澄清石灰水',
+            'D. 通过灼热的碳层'
+        ],
+        answer: 1,
+        explanation: 'CO具有还原性，通过灼热的CuO时：CO + CuO ⟶ Cu + CO₂，将CO转化为CO₂。A错误：CO₂不支持燃烧，无法点燃CO。C会除去CO₂而不是CO。D会生成更多CO。'
+    },
+    {
+        id: 'c3_05', type: 'choice', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '不用其他试剂，下列各组物质可以鉴别出来的是',
+        options: [
+            'A. NaOH、NaCl、FeCl₃',
+            'B. Na₂SO₄、BaCl₂、KNO₃',
+            'C. HCl、H₂SO₄、NaNO₃',
+            'D. NaCl、KCl、CaCl₂'
+        ],
+        answer: 0,
+        explanation: 'A中FeCl₃溶液显黄色，可直接鉴别。用FeCl₃与NaOH反应生成红褐色沉淀，可鉴别NaOH，剩余为NaCl。其他各组无法通过外观直接区分。'
+    },
+    {
+        id: 'c3_06', type: 'choice', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '稀释浓硫酸时，正确的操作是',
+        options: [
+            'A. 将水倒入浓硫酸中',
+            'B. 将浓硫酸沿器壁缓慢倒入水中，并不断搅拌',
+            'C. 将浓硫酸和水同时倒入烧杯中混合',
+            'D. 在量筒中混合浓硫酸和水'
+        ],
+        answer: 1,
+        explanation: '稀释浓硫酸时，应将浓硫酸沿器壁缓慢倒入水中，并用玻璃棒不断搅拌。切不可将水倒入浓硫酸（会放出大量热使水沸腾飞溅）。不能在量筒中稀释。'
+    },
+    {
+        id: 'c3_07', type: 'choice', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '用 pH 试纸测定溶液的 pH，正确的操作是',
+        options: [
+            'A. 将试纸浸入待测液中',
+            'B. 用玻璃棒蘸取待测液滴在试纸上，再与标准比色卡比较',
+            'C. 直接将试纸放入试管中',
+            'D. 将试纸润湿后再滴待测液'
+        ],
+        answer: 1,
+        explanation: '用pH试纸测pH的标准操作：用玻璃棒蘸取少量待测液滴在pH试纸上，将试纸显示的颜色与标准比色卡对比读数。不能将试纸浸入溶液（会污染试剂），也不能润湿试纸（会稀释待测液，影响结果）。'
+    },
+
+    // ---------- 模块 4：化学与社会发展 ----------
+    {
+        id: 'c4_01', type: 'choice', chapter: '化学与社会发展', chapterIdx: 3,
+        question: '下列物质中，属于可再生能源的是',
+        options: ['A. 煤', 'B. 石油', 'C. 天然气', 'D. 乙醇'],
+        answer: 3,
+        explanation: '乙醇由粮食等发酵制得，可以再生。煤、石油、天然气是化石燃料，属于不可再生能源。'
+    },
+    {
+        id: 'c4_02', type: 'choice', chapter: '化学与社会发展', chapterIdx: 3,
+        question: '2023年世界环境日中国的主题是"建设人与自然和谐共生的现代化"。下列做法不符合该主题的是',
+        options: [
+            'A. 推广使用新能源汽车',
+            'B. 将工业废水直接排放到河流中',
+            'C. 分类回收生活垃圾',
+            'D. 大力推广植树造林'
+        ],
+        answer: 1,
+        explanation: '工业废水直接排放会污染水体，不符合环保主题。A、C、D均有利于环境保护。'
+    },
+    {
+        id: 'c4_03', type: 'choice', chapter: '化学与社会发展', chapterIdx: 3,
+        question: '下列做法有利于保护金属资源的是',
+        options: [
+            'A. 大量开采金属矿物',
+            'B. 将废旧电池随意丢弃',
+            'C. 回收利用废旧金属',
+            'D. 用过的铁制品不作处理'
+        ],
+        answer: 2,
+        explanation: '回收利用废旧金属既节约资源又减少污染，是保护金属资源的有效途径。A会造成资源枯竭，B和D会造成污染和浪费。'
+    },
+    {
+        id: 'c4_04', type: 'choice', chapter: '化学与社会发展', chapterIdx: 3,
+        question: '下列灭火方法不正确的是',
+        options: [
+            'A. 油锅着火——用锅盖盖灭',
+            'B. 电器着火——用水浇灭',
+            'C. 森林着火——砍出隔离带',
+            'D. 酒精灯着火——用湿抹布盖灭'
+        ],
+        answer: 1,
+        explanation: '电器着火不能用水浇灭，水会导电，可能导致触电。应先切断电源，再用灭火器灭火。'
+    },
+    {
+        id: 'c4_05', type: 'choice', chapter: '化学与社会发展', chapterIdx: 3,
+        question: '下列物质属于有机合成材料的是',
+        options: ['A. 棉花', 'B. 羊毛', 'C. 塑料', 'D. 蚕丝'],
+        answer: 2,
+        explanation: '合成材料包括塑料、合成纤维、合成橡胶等。棉花、羊毛、蚕丝都是天然材料。'
+    },
+    {
+        id: 'c4_06', type: 'choice', chapter: '化学与社会发展', chapterIdx: 3,
+        question: '人体缺乏下列哪种元素会引起贫血',
+        options: ['A. 钙', 'B. 铁', 'C. 锌', 'D. 碘'],
+        answer: 1,
+        explanation: '铁是血红蛋白的组成元素，缺铁会引起贫血。缺钙易患骨质疏松，缺锌影响生长发育，缺碘易患甲状腺肿大。'
+    },
+
+    // ---------- 模块 5：化学计算 ----------
+    {
+        id: 'c5_01', type: 'choice', chapter: '化学计算', chapterIdx: 4,
+        question: 'NH₄NO₃ 中氮元素的质量分数为',
+        options: ['A. 35%', 'B. 30%', 'C. 28%', 'D. 17.5%'],
+        answer: 0,
+        explanation: 'NH₄NO₃的相对分子质量 = 14+4+14+48 = 80。氮原子个数为2，氮元素质量分数 = (28/80) × 100% = 35%。'
+    },
+    {
+        id: 'c5_02', type: 'choice', chapter: '化学计算', chapterIdx: 4,
+        question: '现有 40g 质量分数为 5% 的氯化钠溶液，若将其质量分数增大到 10%，可采用的方法是',
+        options: [
+            'A. 加入 2g 氯化钠固体',
+            'B. 蒸发掉 20g 水',
+            'C. 蒸发掉 18g 水',
+            'D. 加入 40g 质量分数为 15%的氯化钠溶液'
+        ],
+        answer: 1,
+        explanation: '原溶液中NaCl质量=40×5%=2g。设蒸发掉x g水，2/(40-x)=10%，解得x=20，应蒸发20g水。'
+    },
+    {
+        id: 'c5_03', type: 'choice', chapter: '化学计算', chapterIdx: 4,
+        question: '用 36.5g 质量分数为 20% 的稀盐酸与足量碳酸钙反应，理论上可生成 CO₂ 的质量是',
+        options: ['A. 2.2g', 'B. 4.4g', 'C. 8.8g', 'D. 17.6g'],
+        answer: 1,
+        explanation: '盐酸中HCl质量=36.5×20%=7.3g。CaCO₃+2HCl=CaCl₂+H₂O+CO₂↑，HCl与CO₂质量比73:44。设生成CO₂ x g，73/44=7.3/x，x=4.4g。'
+    },
+    {
+        id: 'c5_04', type: 'choice', chapter: '化学计算', chapterIdx: 4,
+        question: '某化合物由碳、氢、氧三种元素组成，其中碳元素质量分数为60%，氢元素质量分数为13.3%。则该化合物的化学式可能是',
+        options: ['A. C₂H₆O', 'B. C₃H₈O', 'C. C₂H₅OH', 'D. CH₃COOH'],
+        answer: 1,
+        explanation: 'C₃H₈O相对分子质量=60。C: 36/60=60%，H: 8/60≈13.3%，O: 16/60≈26.7%，符合题意。'
+    },
+    {
+        id: 'c5_05', type: 'choice', chapter: '化学计算', chapterIdx: 4,
+        question: '在反应 A + 2B = C + 2D 中，已知 16g A 与足量 B 恰好完全反应，生成 28g C 和 20g D。若 B 的相对分子质量为 32，则 A 的相对分子质量为',
+        options: ['A. 16', 'B. 32', 'C. 48', 'D. 64'],
+        answer: 1,
+        explanation: '参加反应的B质量=28+20-16=32g。n(B)=32/32=1mol。根据化学方程式A+2B，n(A)=n(B)/2=0.5mol。M(A)=16/0.5=32g/mol，所以A的相对分子质量为32。'
+    },
+
+    // ---------- 模块 6：综合 ----------
+    {
+        id: 'c6_01', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '下列图像能正确反映对应变化关系的是',
+        options: [
+            'A. 加热氯酸钾和MnO₂混合物制O₂',
+            'B. 向一定量盐酸中加水稀释',
+            'C. 向一定量NaOH溶液中滴加稀盐酸',
+            'D. 向一定量CuSO₄溶液中加入铁粉'
+        ],
+        answer: 3,
+        explanation: 'D正确：Fe+CuSO₄=FeSO₄+Cu，铁的相对原子质量56小于铜的64，溶液质量减少，但FeSO₄溶液质量先减少后不变（反应完全后）。A中MnO₂是催化剂，质量不变。B中酸性溶液pH不会大于7。C中pH应从大于7降到小于7。'
+    },
+    {
+        id: 'c6_02', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '鉴别下列各组物质，所用试剂或方法不正确的是',
+        options: [
+            'A. 硬水和软水——肥皂水',
+            'B. 氮气和二氧化碳——燃着的木条',
+            'C. 氯化铵和尿素[CO(NH₂)₂]——熟石灰',
+            'D. 棉纤维和羊毛纤维——灼烧闻气味'
+        ],
+        answer: 1,
+        explanation: 'B不正确：氮气和CO₂都不支持燃烧，都能使燃着的木条熄灭，无法鉴别。A：硬水泡沫少、软水泡沫多。C：氯化铵加熟石灰有氨味，尿素没有。D：羊毛灼烧有烧焦羽毛味，棉纤维灼烧有烧纸味。'
+    },
+    {
+        id: 'c6_03', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '甲、乙两种物质的溶解度曲线如右图所示。下列说法正确的是',
+        options: [
+            'A. 甲的溶解度大于乙的溶解度',
+            'B. t₁℃时，甲、乙的饱和溶液中溶质质量分数相等',
+            'C. t₂℃时，甲的饱和溶液降温至t₁℃变为不饱和溶液',
+            'D. t₂℃时，甲、乙的饱和溶液各100g，所含溶质的质量相等'
+        ],
+        answer: 1,
+        explanation: 'A错误：未指明温度不能比较溶解度大小。B正确：t₁℃时甲、乙溶解度相等，饱和溶液溶质质量分数相等。C错误：降温后甲的溶解度减小，会析出晶体，仍为饱和溶液。D错误：t₂℃时甲溶解度大于乙，饱和溶液中甲的质量分数更大。'
+    },
+    {
+        id: 'c6_04', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '下列各组物质在水溶液中能大量共存，且溶液为无色的是',
+        options: [
+            'A. Na₂CO₃、HCl、NaCl',
+            'B. CuSO₄、KNO₃、NaOH',
+            'C. Na₂SO₄、KCl、HNO₃',
+            'D. NaOH、Na₂CO₃、H₂SO₄'
+        ],
+        answer: 2,
+        explanation: 'A中Na₂CO₃和HCl反应产生CO₂。B中CuSO₄溶液为蓝色，且CuSO₄与NaOH反应生成Cu(OH)₂沉淀。D中NaOH、Na₂CO₃均与H₂SO₄反应。C中三种物质不反应且溶液均无色。'
+    },
+    {
+        id: 'c6_05', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '除去下列物质中的少量杂质（括号内为杂质），所用试剂和方法正确的是',
+        options: [
+            'A. NaCl溶液（Na₂CO₃）——加适量Ca(NO₃)₂溶液，过滤',
+            'B. CO₂（水蒸气）——通过足量NaOH固体',
+            'C. Cu粉（Fe粉）——加足量稀硫酸，过滤，洗涤，干燥',
+            'D. KNO₃溶液（KCl）——加过量AgNO₃溶液，过滤'
+        ],
+        answer: 2,
+        explanation: 'C正确：Fe与稀硫酸反应生成FeSO₄溶于水，Cu不与稀硫酸反应，过滤后得Cu。A中引入新杂质NaNO₃。B中NaOH固体吸收水蒸气的同时也会与CO₂反应。D中引入新杂质AgNO₃。'
+    },
+    {
+        id: 'c6_06', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '下列转化关系中，不能一步实现的是',
+        options: [
+            'A. Fe ⟶ FeCl₂',
+            'B. CaO ⟶ Ca(OH)₂',
+            'C. CO₂ ⟶ O₂',
+            'D. NaCl ⟶ Na₂CO₃'
+        ],
+        answer: 3,
+        explanation: 'D不能一步实现：NaCl → Na₂CO₃不能直接通过一步反应实现（需要先制取NaOH等中间产物）。A：Fe+2HCl=FeCl₂+H₂↑。B：CaO+H₂O=Ca(OH)₂。C：通过光合作用CO₂可以转化为O₂。'
+    },
+    {
+        id: 'c6_07', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '实验室配制 50g 质量分数为 6% 的氯化钠溶液，下列操作会导致所得溶液质量分数偏大的是',
+        options: [
+            'A. 称量氯化钠时，药品和砝码放反了（使用游码）',
+            'B. 用量筒量取水时仰视读数',
+            'C. 配制好的溶液在转移时洒出',
+            'D. 溶解时所用的烧杯内壁有水'
+        ],
+        answer: 2,
+        explanation: 'C正确：溶液洒出不影响溶质质量分数（已经配好了）。A中放反了导致称取的NaCl偏少，质量分数偏小。B中仰视读数导致量取水偏多，质量分数偏小。D中烧杯内壁有水导致溶剂偏多，质量分数偏小。'
+    },
+    // 上一题修正见下方 c6_08fix
+    {
+        id: 'c6_08fix', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '下列关于实验现象的描述，不正确的是',
+        options: [
+            'A. 硫在氧气中燃烧，发出蓝紫色火焰',
+            'B. 打开盛有浓盐酸的瓶盖，瓶口有白烟出现',
+            'C. 向氢氧化钠溶液中滴加酚酞溶液，溶液变红',
+            'D. 硝酸铵溶于水，溶液温度降低'
+        ],
+        answer: 1,
+        explanation: 'B不正确：浓盐酸具有挥发性，挥发出的HCl气体与空气中水蒸气结合形成盐酸小液滴，产生的是白雾（不是白烟）。烟是固体颗粒，雾是小液滴。'
+    },
+
+    // ---------- 填空题 ----------
+    {
+        id: 'f1_01', type: 'fill', chapter: '物质的化学变化', chapterIdx: 0,
+        question: '用化学用语填空：<br>① 2 个氢原子 ______；<br>② 3 个水分子 ______；<br>③ 硫酸根离子 ______。',
+        answer: ['2H', '3H₂O', 'SO₄²⁻'],
+        acceptable: ['2h', '3h2o', 'so4 2-'],
+        explanation: '原子符号前加数字表示原子个数，分子式前加数字表示分子个数，离子在元素符号右上角标出电荷数。'
+    },
+    {
+        id: 'f1_02', type: 'fill', chapter: '身边化学物质', chapterIdx: 1,
+        question: '稀盐酸和氢氧化钠溶液反应（中和反应）的化学方程式为：<br>______ + ______ = ______ + ______',
+        answer: ['HCl', 'NaOH', 'NaCl', 'H₂O'],
+        acceptable: ['hcl', 'naoh', 'nacl', 'h2o'],
+        explanation: '中和反应：酸+碱→盐+水。盐酸和氢氧化钠反应生成氯化钠和水，HCl+NaOH=NaCl+H₂O。'
+    },
+    {
+        id: 'f1_03', type: 'fill', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '实验室加热高锰酸钾制取氧气的化学方程式为：<br>______',
+        answer: ['2KMnO₄ ⟶ K₂MnO₄ + MnO₂ + O₂↑'],
+        acceptable: ['2kmno4=k2mno4+mno2+o2', '2kmno4加热k2mno4+mno2+o2'],
+        explanation: '高锰酸钾加热分解生成锰酸钾、二氧化锰和氧气。注意加热条件、气体符号和配平。'
+    },
+
+    // ---------- 更多填空题 ----------
+    {
+        id: 'f2_01', type: 'fill', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '现有下列仪器：①试管 ②烧杯 ③量筒 ④酒精灯 ⑤集气瓶。<br>（1）能直接加热的仪器是______（填序号）；<br>（2）用于量取液体体积的仪器是______（填序号）。',
+        answer: ['①', '③'],
+        acceptable: ['1', '3', '①③', '1 3'],
+        explanation: '试管可以直接加热，烧杯需要垫石棉网加热。量筒用于量取液体体积，不能用加热或作反应容器。'
+    },
+
+    // ---------- 补全更多题目到60题 ----------
+    {
+        id: 'c1_08', type: 'choice', chapter: '物质的化学变化', chapterIdx: 0,
+        question: '下列反应中，属于分解反应的是',
+        options: [
+            'A. 2H₂ + O₂ ⟶ 2H₂O',
+            'B. 2KClO₃ ⟶ 2KCl + 3O₂↑',
+            'C. Fe + CuSO₄ ⟶ FeSO₄ + Cu',
+            'D. Ca(OH)₂ + CO₂ ⟶ CaCO₃↓ + H₂O'
+        ],
+        answer: 1,
+        explanation: '分解反应是一种物质生成两种或两种以上其他物质的反应。B中KClO₃分解为KCl和O₂，属于分解反应。A是化合反应，C是置换反应，D不属于基本反应类型。'
+    },
+    {
+        id: 'c3_08', type: 'choice', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '检验集气瓶中的气体是否为二氧化碳，正确的方法是',
+        options: [
+            'A. 将燃着的木条伸入瓶中',
+            'B. 将气体通入紫色石蕊溶液中',
+            'C. 向瓶中倒入澄清石灰水',
+            'D. 闻气体的气味'
+        ],
+        answer: 2,
+        explanation: '检验CO₂的常用方法是将气体通入澄清石灰水，若石灰水变浑浊则证明是CO₂。A中木条熄灭只能说明气体不支持燃烧，N₂也能使木条熄灭。'
+    },
+    {
+        id: 'c2_13', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '下列有关溶液的说法正确的是',
+        options: [
+            'A. 溶液一定是混合物',
+            'B. 饱和溶液一定是浓溶液',
+            'C. 均一、稳定的液体一定是溶液',
+            'D. 溶液中的溶质只能是一种'
+        ],
+        answer: 0,
+        explanation: 'A正确：溶液由溶质和溶剂组成，至少含两种物质，一定是混合物。B错误：饱和溶液不一定是浓溶液（如饱和Ca(OH)₂溶液很稀）。C错误：水是均一稳定的液体，但不是溶液。D错误：溶液中可以有多种溶质。'
+    },
+    {
+        id: 'c4_07', type: 'choice', chapter: '化学与社会发展', chapterIdx: 3,
+        question: '2024年河南省政府工作报告提出要"深入推进环境污染防治"。下列做法不正确的是',
+        options: [
+            'A. 推广使用清洁能源，减少燃煤',
+            'B. 用喷淋水的方法降低建筑工地的扬尘',
+            'C. 将废弃塑料就地焚烧处理',
+            'D. 企业排放的废气经处理达标后再排放'
+        ],
+        answer: 2,
+        explanation: '焚烧废弃塑料会产生大量有毒气体（二噁英等），污染空气，不符合环保理念。应分类回收或集中处理。'
+    },
+    {
+        id: 'c2_14', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '下列物质长期暴露在空气中，质量明显增加且变质的是',
+        options: [
+            'A. 氢氧化钠固体',
+            'B. 浓盐酸',
+            'C. 浓硫酸',
+            'D. 食盐'
+        ],
+        answer: 0,
+        explanation: 'NaOH固体在空气中会吸收水蒸气潮解，并与CO₂反应生成Na₂CO₃，质量增加且变质。B中浓盐酸挥发质量减少。C中浓硫酸吸水质量增加但不变质（物理变化）。D中食盐质量基本不变。'
+    },
+    {
+        id: 'c6_09', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '向 AgNO₃ 和 Cu(NO₃)₂ 的混合溶液中加入一定量的铁粉，充分反应后过滤。下列判断正确的是',
+        options: [
+            'A. 滤液中一定含有 Fe(NO₃)₂',
+            'B. 滤渣中一定含有 Ag 和 Cu',
+            'C. 滤液一定为无色',
+            'D. 滤渣的质量一定小于加入铁粉的质量'
+        ],
+        answer: 0,
+        explanation: '金属活动性：Fe>Cu>Ag。铁先置换Ag（Fe+2AgNO₃=Fe(NO₃)₂+2Ag），再置换Cu。所以滤液中一定含有Fe(NO₃)₂。B错误：若铁不足，滤渣可能只有Ag。C错误：若置换了Cu，Cu(NO₃)₂溶液为蓝色。D错误：Fe→2Ag质量增加。'
+    },
+    {
+        id: 'c6_10', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '能在同一溶液中大量共存，且溶液为无色透明的一组物质是',
+        options: [
+            'A. KOH、Na₂SO₄、MgCl₂',
+            'B. FeCl₃、NaCl、KNO₃',
+            'C. HCl、NaCl、Na₂CO₃',
+            'D. NaNO₃、KCl、NaOH'
+        ],
+        answer: 3,
+        explanation: 'D中三种物质不反应且溶液均为无色。A中KOH和MgCl₂反应生成Mg(OH)₂沉淀。B中FeCl₃溶液显黄色。C中HCl和Na₂CO₃反应产生CO₂气泡。'
+    },
+    {
+        id: 'c5_06', type: 'choice', chapter: '化学计算', chapterIdx: 4,
+        question: '某温度下，将 20g 硝酸钾放入 80g 水中，充分溶解后得到 100g 溶液。则下列说法不正确的是',
+        options: [
+            'A. 所得溶液是饱和溶液',
+            'B. 该温度下硝酸钾的溶解度为 25g',
+            'C. 所得溶液中溶质质量分数为 20%',
+            'D. 将溶液蒸干可得 20g 硝酸钾'
+        ],
+        answer: 1,
+        explanation: '20g+80g=100g，说明20g硝酸钾全部溶解，无法判断是否饱和。溶解度指100g水中最多溶解的质量，但题目未给出是否饱和，不能得出溶解度为25g的结论。C正确：20/100=20%。D正确：溶液蒸干得到全部溶质20g。'
+    },
+    {
+        id: 'f2_02', type: 'fill', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '用向上排空气法收集 CO₂ 时，验满的方法是：将______的木条放在______，若木条熄灭，则已集满。',
+        answer: ['燃着', '集气瓶口'],
+        acceptable: ['燃烧', '瓶口', '口部'],
+        explanation: 'CO₂不支持燃烧，用燃着的木条放在集气瓶口验满。注意是"瓶口"不是"瓶中"。'
+    },
+    {
+        id: 'f2_03', type: 'fill', chapter: '身边化学物质', chapterIdx: 1,
+        question: '铝的化学性质活泼，但铝制品却有很好的抗腐蚀性能，原因是铝在空气中表面形成一层致密的______薄膜。',
+        answer: ['氧化铝', 'Al₂O₃', '氧化铝(Al₂O₃)'],
+        acceptable: ['氧化铝薄膜', '三氧化二铝', 'al2o3'],
+        explanation: '4Al + 3O₂ = 2Al₂O₃，铝与空气中的氧气反应生成一层致密的氧化铝薄膜，阻止内部铝进一步被氧化。'
+    },
+    {
+        id: 'c2_15', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '下列物质中，不属于酸类的是',
+        options: ['A. HCl', 'B. H₂SO₄', 'C. NaHCO₃', 'D. HNO₃'],
+        answer: 2,
+        explanation: 'NaHCO₃（碳酸氢钠）是盐，不是酸。酸的阳离子全部是H⁺，NaHCO₃的阳离子是Na⁺。'
+    },
+    {
+        id: 'c3_09', type: 'choice', chapter: '化学实验与探究', chapterIdx: 2,
+        question: '配制一定溶质质量分数的氯化钠溶液时，下列操作会使溶质质量分数偏小的是',
+        options: [
+            'A. 称量时将氯化钠放在托盘天平的右盘（未用游码）',
+            'B. 量取水时俯视读数',
+            'C. 溶解时使用的烧杯内壁有水珠',
+            'D. 将配好的溶液转移时洒出部分'
+        ],
+        answer: 2,
+        explanation: 'C中烧杯内壁有水珠使溶剂偏多，溶质质量分数偏小。A中左码右物但未用游码，称取质量不变。B中俯视读数使量取的水偏少，质量分数偏大。D中溶液已配好，洒出不影响质量分数。'
+    },
+    {
+        id: 'c4_08', type: 'choice', chapter: '化学与社会发展', chapterIdx: 3,
+        question: '下列关于甲醛（HCHO）的说法不正确的是',
+        options: [
+            'A. 甲醛是一种有机物',
+            'B. 甲醛由碳、氢、氧三种元素组成',
+            'C. 甲醛中碳、氢、氧的原子个数比为 1:2:1',
+            'D. 甲醛水溶液可用于浸泡海产品保鲜'
+        ],
+        answer: 3,
+        explanation: '甲醛有毒，会损害人体健康，不能用于浸泡海产品。甲醛水溶液（福尔马林）只用用于保存标本。'
+    },
+    {
+        id: 'c1_09', type: 'choice', chapter: '物质的化学变化', chapterIdx: 0,
+        question: '在一个密闭容器中有甲、乙、丙、丁四种物质，在一定条件下充分反应，测得反应前后各物质的质量如下：<br>甲反应前20g，反应后待测；乙反应前2g，反应后22g；丙反应前1g，反应后1g；丁反应前10g，反应后5g。<br>下列说法正确的是',
+        options: [
+            'A. 待测值为 5',
+            'B. 丙一定是催化剂',
+            'C. 该反应是化合反应',
+            'D. 乙和丁的质量变化比为 12:5'
+        ],
+        answer: 0,
+        explanation: '由质量守恒定律：反应前总质量=20+2+1+10=33g，反应后待测值=33-(22+1+5)=5，A正确。丙质量不变可能是催化剂（也可能是不参与反应的杂质），B中"一定"说法错误。甲和丁质量减少是反应物，乙质量增加是生成物，反应为甲+丁→乙，属于化合反应，C错误。乙增加20g，丁减少5g，质量变化比为20:5=4:1，D错误。'
+    },
+    {
+        id: 'c2_16', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '要鉴别氯化铵、硫酸铵、氯化钾三种化肥，可依次加入',
+        options: [
+            'A. 水、硝酸银溶液',
+            'B. 氢氧化钡溶液、硝酸银溶液',
+            'C. 稀盐酸、氢氧化钠溶液',
+            'D. 硝酸银溶液、稀硝酸'
+        ],
+        answer: 1,
+        explanation: '先加Ba(OH)₂溶液：铵盐产生氨气（刺激性气味），硫酸铵还产生BaSO₄白色沉淀（能区分氯化铵和硫酸铵）。再用AgNO₃溶液鉴别氯化铵（产生AgCl白色沉淀）和氯化钾。'
+    },
+    {
+        id: 'c5_07', type: 'choice', chapter: '化学计算', chapterIdx: 4,
+        question: '某补钙剂的主要成分是碳酸钙（CaCO₃）。取 10g 补钙剂与足量稀盐酸反应，生成 3.3g CO₂（杂质不与盐酸反应）。则该补钙剂中碳酸钙的质量分数为',
+        options: ['A. 50%', 'B. 65%', 'C. 75%', 'D. 85%'],
+        answer: 2,
+        explanation: 'CaCO₃+2HCl=CaCl₂+H₂O+CO₂↑，CaCO₃与CO₂质量比100:44。设CaCO₃质量为x，100/44=x/3.3，x=7.5g。质量分数=7.5/10×100%=75%。'
+    },
+    {
+        id: 'c6_11', type: 'choice', chapter: '综合', chapterIdx: 5,
+        question: '下列实验方案能达到实验目的的是',
+        options: [
+            'A. 分离 Cu 和 Fe 的混合物——加足量稀盐酸，过滤',
+            'B. 除去 CaO 中的 CaCO₃——加足量水，过滤',
+            'C. 检验 CO₂ 中的 HCl 气体——通入紫色石蕊溶液',
+            'D. 鉴别 NaOH 和 NH₄NO₃ 固体——加水溶解，测温度'
+        ],
+        answer: 3,
+        explanation: 'D正确：NaOH溶于水放热（温度升高），NH₄NO₃溶于水吸热（温度降低）。A中Cu和Fe的混合物加盐酸，Fe溶解但Cu不溶，可分离，但还需洗涤、干燥。B中CaO会与水反应生成Ca(OH)₂违背除杂原则。C中CO₂也能使石蕊变红。'
+    },
+    {
+        id: 'c2_17', type: 'choice', chapter: '身边的化学物质', chapterIdx: 1,
+        question: '将一定量的铁粉加入 AgNO₃ 和 Cu(NO₃)₂ 的混合溶液中，充分反应后过滤，向滤渣中加入稀盐酸有气泡产生。则下列说法正确的是',
+        options: [
+            'A. 滤渣中一定有 Fe 和 Ag，可能有 Cu',
+            'B. 滤液中一定有 Fe(NO₃)₂，一定没有 AgNO₃',
+            'C. 滤渣中一定有 Fe、Cu、Ag',
+            'D. 滤液中一定有 Fe(NO₃)₂，可能有 Cu(NO₃)₂'
+        ],
+        answer: 1,
+        explanation: '向滤渣中加盐酸有气泡产生，说明滤渣中有铁粉（Fe+2HCl=FeCl₂+H₂↑），说明铁过量。铁过量则AgNO₃和Cu(NO₃)₂全部被置换，滤渣中一定有Fe、Cu、Ag，滤液中只有Fe(NO₃)₂。所以B正确。'
+    },
+];
+
+// ====================================================================
+//  App 状 态
+// ====================================================================
+const state = {
+    mode: '',           // 'chapter' | 'exam' | 'random'
+    chapterIdx: -1,
+    questions: [],
+    current: 0,
+    answers: [],        // 用户作答
+    correct: [],        // boolean[]
+    timer: null,
+    timeLeft: 0,
+    shuffled: false,
+    wrongSet: new Set(), // 存错题 id
+};
+
+// ====================================================================
+//  工 具 函 数
+// ====================================================================
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function $(id) { return document.getElementById(id); }
+
+function getWrongIds() {
+    try {
+        return new Set(JSON.parse(localStorage.getItem('chem_wrong') || '[]'));
+    } catch { return new Set(); }
+}
+
+function saveWrongIds(set) {
+    localStorage.setItem('chem_wrong', JSON.stringify([...set]));
+}
+
+function updateWrongTag() {
+    const w = getWrongIds();
+    const tag = $('wrongTag');
+    tag.textContent = w.size ? `共 ${w.size} 道错题` : '暂无错题';
+    tag.style.color = w.size ? '#e74c3c' : '#aaa';
+}
+
+// ====================================================================
+//  页 面 切 换
+// ====================================================================
+function showHome() {
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+    state.mode = '';
+    $('pageHome').classList.remove('hidden');
+    $('pageChapter').classList.add('hidden');
+    $('pageQuiz').classList.add('hidden');
+    $('pageResult').classList.add('hidden');
+    updateWrongTag();
+}
+
+function showChapterList() {
+    $('pageHome').classList.add('hidden');
+    $('pageChapter').classList.remove('hidden');
+    $('pageQuiz').classList.add('hidden');
+    $('pageResult').classList.add('hidden');
+    renderChapterList();
+}
+
+function confirmExit() {
+    if (state.answers.some(a => a !== null && a !== undefined && a !== '')) {
+        if (!confirm('确定退出当前练习吗？进度将不会保存。')) return;
+    }
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+    showHome();
+}
+
+// ====================================================================
+//  章 节 列 表
+// ====================================================================
+const CHAPTERS = [
+    '物质的化学变化',
+    '身边的化学物质',
+    '化学实验与探究',
+    '化学与社会发展',
+    '化学计算',
+    '综合'
+];
+
+function renderChapterList() {
+    const el = $('chapterList');
+    const wrongIds = getWrongIds();
+    el.innerHTML = CHAPTERS.map((ch, idx) => {
+        const count = QUESTION_BANK.filter(q => q.chapterIdx === idx).length;
+        return `<div class="chapter-item" onclick="startChapter(${idx})">
+            <span class="name">${ch}</span>
+            <span><span class="count">${count} 题</span></span>
+        </div>`;
+    }).join('');
+}
+
+// ====================================================================
+//  启 动 测 试
+// ====================================================================
+function startChapter(idx) {
+    state.mode = 'chapter';
+    state.chapterIdx = idx;
+    state.questions = QUESTION_BANK.filter(q => q.chapterIdx === idx);
+    state.shuffled = true;
+    shuffle(state.questions);
+    state.current = 0;
+    state.answers = new Array(state.questions.length).fill(null);
+    state.correct = new Array(state.questions.length).fill(null);
+    state.timeLeft = 0;
+    enterQuiz(`${CHAPTERS[idx]} · 章节练习`);
+}
+
+function startExam() {
+    state.mode = 'exam';
+    state.questions = shuffle([...QUESTION_BANK]).slice(0, 25);
+    state.shuffled = true;
+    state.current = 0;
+    state.answers = new Array(state.questions.length).fill(null);
+    state.correct = new Array(state.questions.length).fill(null);
+    state.timeLeft = 40 * 60;
+    enterQuiz('模拟考试 · 25题 · 40分钟', true);
+}
+
+function startRandom(n) {
+    state.mode = 'random';
+    state.questions = shuffle([...QUESTION_BANK]).slice(0, n);
+    state.shuffled = true;
+    state.current = 0;
+    state.answers = new Array(state.questions.length).fill(null);
+    state.correct = new Array(state.questions.length).fill(null);
+    state.timeLeft = 0;
+    enterQuiz(`随机 ${n} 题`);
+}
+
+function enterQuiz(title, hasTimer) {
+    $('pageHome').classList.add('hidden');
+    $('pageChapter').classList.add('hidden');
+    $('pageQuiz').classList.remove('hidden');
+    $('pageResult').classList.add('hidden');
+
+    const timerEl = $('quizTimer');
+    if (hasTimer) {
+        timerEl.classList.remove('hidden');
+        if (state.timer) clearInterval(state.timer);
+        state.timer = setInterval(() => {
+            state.timeLeft--;
+            if (state.timeLeft <= 0) {
+                clearInterval(state.timer);
+                state.timer = null;
+                finishQuiz();
+                return;
+            }
+            renderTimer();
+        }, 1000);
+    } else {
+        timerEl.classList.add('hidden');
+    }
+
+    renderQuestion();
+}
+
+// ====================================================================
+//  计 时 器
+// ====================================================================
+function renderTimer() {
+    const el = $('quizTimer');
+    const m = Math.floor(state.timeLeft / 60);
+    const s = state.timeLeft % 60;
+    el.textContent = `⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    el.classList.toggle('warning', state.timeLeft <= 60);
+}
+
+// ====================================================================
+//  渲 染 题 目
+// ====================================================================
+function renderQuestion() {
+    const qs = state.questions;
+    const idx = state.current;
+    const q = qs[idx];
+    const total = qs.length;
+    const answered = state.answers.filter(a => a !== null && a !== undefined && a !== '').length;
+
+    $('quizProgress').textContent = `${idx + 1} / ${total}`;
+    $('progressFill').style.width = `${((answered) / total) * 100}%`;
+
+    const area = $('questionArea');
+    const ans = state.answers[idx];
+    const isChoice = q.type === 'choice';
+
+    let html = `<div class="question-card">
+        <div>
+            <span class="q-number">第 ${idx + 1} 题</span>
+            <span class="q-type">${isChoice ? '选择题' : '填空题'}</span>
+            <span class="q-chapter">${q.chapter}</span>
+        </div>
+        <div class="q-text">${q.question}</div>`;
+
+    if (isChoice) {
+        html += `<div class="options">`;
+        q.options.forEach((opt, oi) => {
+            const cls = ['option'];
+            if (ans === oi) cls.push('selected');
+            // 如果已经提交且显示解析
+            if (state.correct[idx] !== null) {
+                cls.push('disabled');
+                if (oi === q.answer) cls.push('correct');
+                if (ans === oi && oi !== q.answer) cls.push('wrong');
+            }
+            html += `<div class="${cls.join(' ')}" data-oi="${oi}" onclick="selectOption(${oi})">${opt}</div>`;
+        });
+        html += `</div>`;
+    } else {
+        const val = ans || '';
+        const cls = ['fill-input'];
+        if (state.correct[idx] === true) cls.push('correct');
+        else if (state.correct[idx] === false) cls.push('wrong');
+        html += `<input class="${cls.join(' ')}" type="text" id="fillInput" value="${val}" placeholder="请输入答案..." oninput="fillInputChanged(this.value)">`;
+    }
+
+    // 解析
+    if (state.correct[idx] !== null) {
+        html += `<div class="explanation"><strong>📖 解析：</strong>${q.explanation}</div>`;
+    }
+
+    html += `</div>`;
+
+    // 按钮
+    html += `<div class="btn-row">`;
+    if (isChoice && state.correct[idx] === null) {
+        html += `<button class="btn btn-primary" id="btnConfirm" onclick="confirmAnswer()">确认答案</button>`;
+    }
+    if (!isChoice && state.correct[idx] === null) {
+        html += `<button class="btn btn-primary" id="btnConfirm" onclick="confirmAnswer()">确认答案</button>`;
+    }
+    if (state.correct[idx] !== null) {
+        if (idx < total - 1) {
+            html += `<button class="btn btn-primary" onclick="nextQuestion()">下一题 →</button>`;
+        } else {
+            html += `<button class="btn btn-accent" onclick="finishQuiz()">查看结果</button>`;
+        }
+    }
+    html += `</div>`;
+
+    // 底部分页
+    if (total > 1) {
+        html += `<div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-top:16px;">`;
+        for (let i = 0; i < total; i++) {
+            let cls = 'badge';
+            if (i === idx) cls += ' badge-primary';
+            else if (state.correct[i] === true) { cls += ''; html += `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#e8f8f0;color:#27ae60;font-size:12px;font-weight:700;cursor:pointer;" onclick="jumpTo(${i})">${i+1}</span>`; continue; }
+            else if (state.correct[i] === false) { cls += ''; html += `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#fdecea;color:#e74c3c;font-size:12px;font-weight:700;cursor:pointer;" onclick="jumpTo(${i})">${i+1}</span>`; continue; }
+            else { cls += ''; html += `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#f5f5f5;color:#999;font-size:12px;cursor:pointer;" onclick="jumpTo(${i})">${i+1}</span>`; continue; }
+            html += `</span>`;
+        }
+        html += `</div>`;
+    }
+
+    area.innerHTML = html;
+
+    // 如果是填空题，聚焦输入框
+    if (!isChoice && state.correct[idx] === null) {
+        const inp = $('fillInput');
+        if (inp) inp.focus();
+    }
+}
+
+// ====================================================================
+//  交 互
+// ====================================================================
+function selectOption(oi) {
+    const idx = state.current;
+    if (state.correct[idx] !== null) return;
+    state.answers[idx] = oi;
+    renderQuestion();
+}
+
+function fillInputChanged(val) {
+    const idx = state.current;
+    state.answers[idx] = val || null;
+}
+
+function confirmAnswer() {
+    const idx = state.current;
+    const q = state.questions[idx];
+    const ans = state.answers[idx];
+
+    if (ans === null || ans === undefined || ans === '') {
+        // 没作答时，选择题默认选第一个
+        if (q.type === 'choice') {
+            state.answers[idx] = 0;
+        } else {
+            alert('请先填写答案再确认！');
+            return;
+        }
+    }
+
+    const finalAns = state.answers[idx];
+    if (q.type === 'choice') {
+        state.correct[idx] = (finalAns === q.answer);
+    } else {
+        // 填空题：模糊匹配
+        const userAns = String(finalAns || '').trim().replace(/\s+/g, '');
+        const answers = q.answer.map(a => String(a).trim().replace(/\s+/g, ''));
+        const acceptable = (q.acceptable || []).map(a => String(a).trim().replace(/\s+/g, ''));
+        const all = [...answers, ...acceptable];
+        state.correct[idx] = all.some(a => a.toLowerCase() === userAns.toLowerCase());
+    }
+
+    // 记录错题
+    if (!state.correct[idx]) {
+        const wrong = getWrongIds();
+        wrong.add(q.id);
+        saveWrongIds(wrong);
+        updateWrongTag();
+    } else {
+        // 如果答对了，从错题本移除
+        const wrong = getWrongIds();
+        if (wrong.has(q.id)) {
+            wrong.delete(q.id);
+            saveWrongIds(wrong);
+            updateWrongTag();
+        }
+    }
+
+    renderQuestion();
+}
+
+function nextQuestion() {
+    if (state.current < state.questions.length - 1) {
+        state.current++;
+        renderQuestion();
+    }
+}
+
+function jumpTo(i) {
+    if (i >= 0 && i < state.questions.length) {
+        state.current = i;
+        renderQuestion();
+    }
+}
+
+// ====================================================================
+//  完 成 测 试
+// ====================================================================
+function finishQuiz() {
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+
+    // 把所有没答的标记为错误
+    const qs = state.questions;
+    for (let i = 0; i < qs.length; i++) {
+        if (state.correct[i] === null) {
+            const q = qs[i];
+            const ans = state.answers[i];
+            if (q.type === 'choice') {
+                state.correct[i] = (ans === q.answer);
+                if (!state.correct[i] && ans !== null) {
+                    const wrong = getWrongIds();
+                    wrong.add(q.id);
+                    saveWrongIds(wrong);
+                }
+            } else {
+                if (ans && String(ans).trim()) {
+                    const userAns = String(ans).trim().replace(/\s+/g, '');
+                    const answers = q.answer.map(a => String(a).trim().replace(/\s+/g, ''));
+                    const acceptable = (q.acceptable || []).map(a => String(a).trim().replace(/\s+/g, ''));
+                    const all = [...answers, ...acceptable];
+                    state.correct[i] = all.some(a => a.toLowerCase() === userAns.toLowerCase());
+                    if (!state.correct[i]) {
+                        const wrong = getWrongIds();
+                        wrong.add(q.id);
+                        saveWrongIds(wrong);
+                    }
+                } else {
+                    state.correct[i] = false;
+                    // 未作答不算错题（不加入错题本）
+                }
+            }
+            // 如果没选任何答案
+            if (state.correct[i] === null) state.correct[i] = false;
+        }
+    }
+
+    updateWrongTag();
+    showResult();
+}
+
+function showResult() {
+    $('pageHome').classList.add('hidden');
+    $('pageChapter').classList.add('hidden');
+    $('pageQuiz').classList.add('hidden');
+    $('pageResult').classList.remove('hidden');
+    $('resultReview').classList.add('hidden');
+
+    const qs = state.questions;
+    const total = qs.length;
+    const correct = state.correct.filter(c => c === true).length;
+    const wrong = state.correct.filter(c => c === false).length;
+    const score = Math.round((correct / total) * 100);
+
+    let grade = '继续加油！';
+    let gradeColor = '#7f8c8d';
+    if (score >= 90) { grade = '优秀！🌟'; gradeColor = '#27ae60'; }
+    else if (score >= 70) { grade = '良好！👍'; gradeColor = '#2d7a4e'; }
+    else if (score >= 60) { grade = '及格！💪'; gradeColor = '#f5a623'; }
+
+    let modeLabel = { 'chapter': '章节练习', 'exam': '模拟考试', 'random': '随机练习' }[state.mode] || '练习';
+
+    const card = $('resultCard');
+    card.innerHTML = `
+        <div style="font-size:14px;color:#aaa;margin-bottom:8px;">${modeLabel}</div>
+        <div class="result-score">${score}<span class="total"> / 100</span></div>
+        <div class="result-label" style="color:${gradeColor};font-size:20px;font-weight:700;">${grade}</div>
+        <div class="result-stats">
+            <div class="stat-item stat-correct"><div class="num">${correct}</div><div class="label">正确</div></div>
+            <div class="stat-item stat-wrong"><div class="num">${wrong}</div><div class="label">错误</div></div>
+            <div class="stat-item"><div class="num">${total}</div><div class="label">总题</div></div>
+        </div>
+        <div style="font-size:13px;color:#aaa;margin-top:8px;">
+            ${state.timeLeft > 0 ? `用时 ${Math.floor((40*60 - state.timeLeft) / 60)} 分 ${(40*60 - state.timeLeft) % 60} 秒` : ''}
+        </div>
+    `;
+}
+
+function showReviewResult() {
+    const section = $('resultReview');
+    section.classList.toggle('hidden');
+
+    if (!section.classList.contains('hidden')) {
+        let html = '<div style="margin-top:16px;"><h3 style="margin-bottom:12px;">📋 详细解析</h3></div>';
+        state.questions.forEach((q, i) => {
+            const isCorrect = state.correct[i];
+            const ans = state.answers[i];
+            const icon = isCorrect ? '✅' : '❌';
+            const color = isCorrect ? 'var(--success)' : 'var(--danger)';
+            html += `<div class="question-card" style="border-left: 4px solid ${color};">
+                <div style="font-size:12px;color:${color};font-weight:600;margin-bottom:8px;">${icon} 第 ${i+1} 题 · ${q.type === 'choice' ? '选择题' : '填空题'}</div>
+                <div class="q-text">${q.question}</div>`;
+            if (q.type === 'choice') {
+                html += `<div style="font-size:14px;margin-bottom:8px;">`;
+                q.options.forEach((opt, oi) => {
+                    const c = [];
+                    if (oi === q.answer) c.push('color:var(--success);font-weight:600;');
+                    if (ans === oi && oi !== q.answer) c.push('color:var(--danger);');
+                    html += `<div style="${c.join('')}">${opt}${oi === q.answer ? ' ✓' : ''}</div>`;
+                });
+                html += `</div>`;
+            } else {
+                html += `<div style="font-size:14px;margin-bottom:8px;">
+                    <span>你的答案：<span style="color:${color};font-weight:600;">${ans || '（未作答）'}</span></span>
+                    <span style="margin-left:16px;">正确答案：<span style="color:var(--success);font-weight:600;">${q.answer.join('、')}</span></span>
+                </div>`;
+            }
+            html += `<div class="explanation"><strong>📖 解析：</strong>${q.explanation}</div>`;
+            html += `</div>`;
+        });
+        section.innerHTML = html;
+    }
+}
+
+// ====================================================================
+//  错 题 回 顾
+// ====================================================================
+function showReview() {
+    const wrongIds = getWrongIds();
+    if (wrongIds.size === 0) {
+        alert('暂无错题，继续练习吧！🎉');
+        return;
+    }
+
+    const wrongQuestions = QUESTION_BANK.filter(q => wrongIds.has(q.id));
+    if (wrongQuestions.length === 0) {
+        // 可能题目已不在题库中
+        alert('暂无错题记录。');
+        return;
+    }
+
+    state.mode = 'review';
+    state.questions = shuffle([...wrongQuestions]);
+    state.shuffled = true;
+    state.current = 0;
+    state.answers = new Array(state.questions.length).fill(null);
+    state.correct = new Array(state.questions.length).fill(null);
+    state.timeLeft = 0;
+    enterQuiz(`错题回顾 · ${state.questions.length} 题`);
+}
+
+// ====================================================================
+//  初 始 化
+// ====================================================================
+updateWrongTag();
+
+// 键盘快捷键
+document.addEventListener('keydown', (e) => {
+    if ($('pageQuiz').classList.contains('hidden')) return;
+    const qs = state.questions;
+    if (!qs || qs.length === 0) return;
+    const idx = state.current;
+    const q = qs[idx];
+
+    if (q.type === 'choice' && state.correct[idx] === null) {
+        if (e.key >= '1' && e.key <= '4') {
+            selectOption(parseInt(e.key) - 1);
+            e.preventDefault();
+        } else if (e.key === 'a' || e.key === 'A') { selectOption(0); e.preventDefault(); }
+        else if (e.key === 'b' || e.key === 'B') { selectOption(1); e.preventDefault(); }
+        else if (e.key === 'c' || e.key === 'C') { selectOption(2); e.preventDefault(); }
+        else if (e.key === 'd' || e.key === 'D') { selectOption(3); e.preventDefault(); }
+    }
+
+    if (e.key === 'Enter' && state.correct[idx] === null) {
+        const btn = document.querySelector('#btnConfirm');
+        if (btn) { btn.click(); e.preventDefault(); }
+    }
+
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (state.correct[idx] !== null && idx < qs.length - 1) {
+            nextQuestion(); e.preventDefault();
+        }
+    }
+});
+
+console.log('🧪 河南中考化学练习系统已加载！');
+console.log(`📚 题库共 ${QUESTION_BANK.length} 道题，覆盖 6 大知识模块`);
+</script>
+</body>
+</html>
