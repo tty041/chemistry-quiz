@@ -840,11 +840,13 @@ function finishQuiz() {
             const q = qs[i];
             const ans = state.answers[i];
             if (q.type === 'choice') {
-                state.correct[i] = (ans === q.answer);
-                if (!state.correct[i] && ans !== null) {
-                    const wrong = getWrongIds();
-                    wrong.add(q.id);
-                    saveWrongIds(wrong);
+                if (ans !== null && ans !== undefined) {
+                    state.correct[i] = (ans === q.answer);
+                    if (!state.correct[i]) {
+                        const wrong = getWrongIds();
+                        wrong.add(q.id);
+                        saveWrongIds(wrong);
+                    }
                 }
             }
             // 未作答的题不标记为错误，不计入评分
