@@ -833,7 +833,7 @@ function jumpTo(i) {
 function finishQuiz() {
     if (state.timer) { clearInterval(state.timer); state.timer = null; }
 
-    // 把所有没答的选择题标记为错误，非选择题不做判断（由学生手动判断）
+    // 没答的题不判断，只对已作答的题进行评分
     const qs = state.questions;
     for (let i = 0; i < qs.length; i++) {
         if (state.correct[i] === null && !state.submitted[i]) {
@@ -847,8 +847,7 @@ function finishQuiz() {
                     saveWrongIds(wrong);
                 }
             }
-            // 非选择题未填的不做判断
-            if (state.correct[i] === null && q.type === 'choice') state.correct[i] = false;
+            // 未作答的题不标记为错误，不计入评分
         } else if (state.submitted[i]) {
             state.correct[i] = null; // 非选择题不计入正确/错误统计
         }
