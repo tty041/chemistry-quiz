@@ -45,6 +45,12 @@ body {
 
 /* ========== Home Page ========== */
 .home-grid { display: grid; gap: 12px; margin-top: 16px; }
+.home-row-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.half-card { padding: 14px 12px; }
+.half-card h3 { font-size: 15px; }
+.half-card p { font-size: 12px; }
+.half-card .icon { font-size: 24px; }
+.card-flashcard { border-color: #8e44ad; }
 .home-card {
     background: var(--card);
     border-radius: var(--radius);
@@ -255,6 +261,55 @@ body {
 .result-detail-item .r-s { background: #f5f5f5; color: #999; }
 .result-detail-item .q { font-size: 13px; color: var(--text); }
 
+/* ========== Flashcard ========== */
+.flashcard-container {
+    perspective: 1000px;
+    width: 100%;
+    max-width: 400px;
+    height: 260px;
+    margin: 20px auto;
+    cursor: pointer;
+}
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+.flashcard-inner.flipped { transform: rotateY(180deg); }
+.flashcard-front, .flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.flashcard-front {
+    background: linear-gradient(135deg, #2d7a4e, #3c9d64);
+    color: white;
+}
+.flashcard-back {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+    color: white;
+    transform: rotateY(180deg);
+}
+.flashcard-label { font-size: 13px; opacity: 0.8; margin-bottom: 12px; }
+.flashcard-text { font-size: 17px; font-weight: 600; text-align: center; line-height: 1.6; }
+.flashcard-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding: 0 8px;
+}
+
 /* ========== Review ========== */
 .review-section { margin-top: 12px; }
 
@@ -297,11 +352,19 @@ body {
     <!-- ======== Home ======== -->
     <div id="pageHome">
         <div class="home-grid">
-            <div class="home-card card-chapter" onclick="showChapterList()">
-                <div class="icon">📖</div>
-                <h3>按章节练习</h3>
-                <p>按教材章节顺序练习，巩固每个单元知识点</p>
-                <span class="tag" id="chapterTag">共 0 题</span>
+            <div class="home-row-split">
+                <div class="home-card card-chapter half-card" onclick="showChapterList()">
+                    <div class="icon">📖</div>
+                    <h3>按章节练习</h3>
+                    <p>11个单元 · 189题</p>
+                    <span class="tag" id="chapterTag">共 0 题</span>
+                </div>
+                <div class="home-card card-flashcard half-card" onclick="showFlashcardList()">
+                    <div class="icon">🃏</div>
+                    <h3>知识卡片</h3>
+                    <p>翻转背诵知识点</p>
+                    <span class="tag">点击翻卡</span>
+                </div>
             </div>
             <div class="home-card card-exam" onclick="startMockExam()">
                 <div class="icon">📝</div>
@@ -370,6 +433,38 @@ body {
                 <div class="fill" id="progressFill" style="width:0%"></div>
             </div>
             <div id="questionArea"></div>
+        </div>
+    </div>
+
+    <!-- ======== Flashcard ======== -->
+    <div id="pageFlashcard" class="hidden">
+        <div class="quiz-header">
+            <button class="back" onclick="goBackFlashcard()">&larr;</button>
+            <span style="font-weight:600;" id="flashcardTitle">知识卡片</span>
+            <span></span>
+        </div>
+        <div id="flashcardTopicList"></div>
+        <div id="flashcardArea" class="hidden">
+            <div class="flashcard-container" id="flipCard" onclick="flipCard()">
+                <div class="flashcard-inner" id="flipInner">
+                    <div class="flashcard-front" id="flashcardFront">
+                        <div class="flashcard-label">问题</div>
+                        <div class="flashcard-text" id="cardQuestion"></div>
+                    </div>
+                    <div class="flashcard-back" id="flashcardBack">
+                        <div class="flashcard-label">答案</div>
+                        <div class="flashcard-text" id="cardAnswer"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard-nav">
+                <button class="btn btn-outline" onclick="prevCard()">← 上一张</button>
+                <span style="font-size:14px;color:#999;" id="cardProgress"></span>
+                <button class="btn btn-outline" onclick="nextCard()">下一张 →</button>
+            </div>
+            <div style="text-align:center;margin-top:12px;">
+                <button class="btn btn-outline" onclick="showFlashcardList()" style="font-size:13px;">返回列表</button>
+            </div>
         </div>
     </div>
 
@@ -487,6 +582,7 @@ function showHome() {
     $('pageYearExam').classList.add('hidden');
     $('pageQuiz').classList.add('hidden');
     $('pageResult').classList.add('hidden');
+    $('pageFlashcard').classList.add('hidden');
     updateWrongTag();
     updateHomeTags();
 }
@@ -933,6 +1029,118 @@ function showReviewResult() {
         });
         section.innerHTML = html;
     }
+}
+
+// ====================================================================
+//  知 识 卡 片
+// ====================================================================
+var flashcardData = [
+  // === 常见物质的颜色 ===
+  { topic: "常见物质的颜色", question: "CuO（氧化铜）是什么颜色？", answer: "黑色固体" },
+  { topic: "常见物质的颜色", question: "Fe₃O₄（四氧化三铁）是什么颜色？", answer: "黑色固体" },
+  { topic: "常见物质的颜色", question: "MnO₂（二氧化锰）是什么颜色？", answer: "黑色粉末" },
+  { topic: "常见物质的颜色", question: "碳粉（C）是什么颜色？", answer: "黑色" },
+  { topic: "常见物质的颜色", question: "铁粉（Fe）是什么颜色？", answer: "黑色粉末" },
+  { topic: "常见物质的颜色", question: "Fe₂O₃（氧化铁/铁锈）是什么颜色？", answer: "红棕色" },
+  { topic: "常见物质的颜色", question: "Cu（铜/纯铜）是什么颜色？", answer: "紫红色（有金属光泽）" },
+  { topic: "常见物质的颜色", question: "Fe(OH)₃（氢氧化铁）沉淀是什么颜色？", answer: "红褐色沉淀" },
+  { topic: "常见物质的颜色", question: "Cu(OH)₂（氢氧化铜）沉淀是什么颜色？", answer: "蓝色沉淀" },
+  { topic: "常见物质的颜色", question: "CuSO₄·5H₂O（胆矾）是什么颜色？", answer: "蓝色晶体" },
+  { topic: "常见物质的颜色", question: "CuSO₄溶液是什么颜色？", answer: "蓝色（Cu²⁺溶液）" },
+  { topic: "常见物质的颜色", question: "FeCl₃溶液是什么颜色？", answer: "黄色（Fe³⁺溶液）" },
+  { topic: "常见物质的颜色", question: "FeCl₂溶液是什么颜色？", answer: "浅绿色（Fe²⁺溶液）" },
+  { topic: "常见物质的颜色", question: "KMnO₄（高锰酸钾）是什么颜色？", answer: "紫黑色固体，溶液紫红色" },
+  { topic: "常见物质的颜色", question: "S（硫粉）是什么颜色？", answer: "淡黄色固体" },
+  { topic: "常见物质的颜色", question: "红磷（P）是什么颜色？", answer: "暗红色固体" },
+  { topic: "常见物质的颜色", question: "镁条燃烧生成什么颜色固体？", answer: "白色固体（MgO）" },
+  { topic: "常见物质的颜色", question: "铁丝在氧气中燃烧生成什么？", answer: "黑色固体（Fe₃O₄）" },
+  { topic: "常见物质的颜色", question: "硫在氧气中燃烧火焰颜色？", answer: "明亮的蓝紫色火焰" },
+  { topic: "常见物质的颜色", question: "硫在空气中燃烧火焰颜色？", answer: "微弱的淡蓝色火焰" },
+  { topic: "常见物质的颜色", question: "CO₂通入澄清石灰水有什么现象？", answer: "石灰水变白色浑浊（CaCO₃↓）" },
+  { topic: "常见物质的颜色", question: "AgCl（氯化银）沉淀颜色？", answer: "白色沉淀（不溶于稀硝酸）" },
+  { topic: "常见物质的颜色", question: "BaSO₄（硫酸钡）沉淀颜色？", answer: "白色沉淀（不溶于稀硝酸）" },
+  { topic: "常见物质的颜色", question: "CaCO₃（碳酸钙）是什么颜色？", answer: "白色固体/白色沉淀" },
+  { topic: "常见物质的颜色", question: "Mg(OH)₂（氢氧化镁）沉淀颜色？", answer: "白色沉淀" },
+  { topic: "常见物质的颜色", question: "紫色石蕊遇酸变什么颜色？", answer: "变红色" },
+  { topic: "常见物质的颜色", question: "紫色石蕊遇碱变什么颜色？", answer: "变蓝色" },
+  { topic: "常见物质的颜色", question: "无色酚酞遇酸变什么颜色？", answer: "不变色（仍为无色）" },
+  { topic: "常见物质的颜色", question: "无色酚酞遇碱变什么颜色？", answer: "变红色" },
+  { topic: "常见物质的颜色", question: "铜绿（铜锈）是什么颜色？", answer: "绿色" },
+  { topic: "常见物质的颜色", question: "锌粒是什么颜色？", answer: "银白色" },
+  { topic: "常见物质的颜色", question: "镁条是什么颜色？", answer: "银白色" },
+  { topic: "常见物质的颜色", question: "铁丝是什么颜色？", answer: "银白色" },
+];
+
+var flashcardTopics, flashcardCards, flashcardIdx, flashcardMode = '';
+
+function goBackFlashcard() {
+    if (flashcardMode === 'cards') {
+        showFlashcardList();
+    } else {
+        showHome();
+    }
+}
+
+function showFlashcardList() {
+    flashcardMode = 'topics';
+    $('pageHome').classList.add('hidden');
+    $('pageChapter').classList.add('hidden');
+    $('pageQuiz').classList.add('hidden');
+    $('pageResult').classList.add('hidden');
+    $('pageFlashcard').classList.remove('hidden');
+    $('flashcardArea').classList.add('hidden');
+    $('flashcardTopicList').classList.remove('hidden');
+
+    // Group by topic
+    var topics = {};
+    flashcardData.forEach(function(c) {
+        if (!topics[c.topic]) topics[c.topic] = [];
+        topics[c.topic].push(c);
+    });
+    flashcardTopics = Object.keys(topics);
+
+    var html = '<div class="chapter-list" style="margin-top:12px;">';
+    flashcardTopics.forEach(function(topic, idx) {
+        var count = topics[topic].length;
+        html += '<div class="chapter-item" onclick="startFlashcard(\'' + idx + '\')">' +
+            '<span class="name">' + topic + '</span>' +
+            '<span><span class="count">' + count + ' 张</span></span>' +
+        '</div>';
+    });
+    html += '</div>';
+    $('flashcardTopicList').innerHTML = html;
+    $('flashcardTitle').textContent = '知识卡片';
+}
+
+function startFlashcard(topicIdx) {
+    flashcardMode = 'cards';
+    var topic = flashcardTopics[parseInt(topicIdx)];
+    flashcardCards = flashcardData.filter(function(c) { return c.topic === topic; });
+    flashcardIdx = 0;
+    $('flashcardTopicList').classList.add('hidden');
+    $('flashcardArea').classList.remove('hidden');
+    $('flashcardTitle').textContent = topic;
+    showCard();
+}
+
+function showCard() {
+    var card = flashcardCards[flashcardIdx];
+    $('cardQuestion').textContent = card.question;
+    $('cardAnswer').textContent = card.answer;
+    $('flipInner').classList.remove('flipped');
+    $('cardProgress').textContent = (flashcardIdx + 1) + ' / ' + flashcardCards.length;
+}
+
+function flipCard() {
+    $('flipInner').classList.toggle('flipped');
+}
+
+function prevCard() {
+    if (flashcardIdx > 0) { flashcardIdx--; showCard(); }
+}
+
+function nextCard() {
+    if (flashcardIdx < flashcardCards.length - 1) { flashcardIdx++; showCard(); }
 }
 
 // ====================================================================
