@@ -302,6 +302,9 @@ body {
 }
 .flashcard-label { font-size: 13px; opacity: 0.8; margin-bottom: 12px; }
 .flashcard-text { font-size: 17px; font-weight: 600; text-align: center; line-height: 1.6; }
+.flashcard-text .eq { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; }
+.flashcard-text .eq small { font-size: 0.6em; line-height: 1.2; opacity: 0.85; font-weight: 400; }
+.flashcard-text .eq .bar { font-size: inherit; line-height: 1; }
 .flashcard-nav {
     display: flex;
     justify-content: space-between;
@@ -1178,7 +1181,8 @@ function startFlashcard(topicIdx) {
 function showCard() {
     var card = flashcardCards[flashcardIdx];
     $('cardQuestion').textContent = card.question;
-    $('cardAnswer').textContent = card.answer;
+    var ans = card.answer.replace(/=([^=]+)=/g, '<span class="eq"><small>$1</small>══</span>');
+    $('cardAnswer').innerHTML = ans;
     $('flipInner').classList.remove('flipped');
     $('cardProgress').textContent = (flashcardIdx + 1) + ' / ' + flashcardCards.length;
 }
